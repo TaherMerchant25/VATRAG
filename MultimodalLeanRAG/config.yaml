@@ -1,0 +1,82 @@
+# Multimodal LeanRAG Configuration
+# ================================
+
+# LLM Configuration (for relation extraction and summarization)
+deepseek:
+  model: "deepseek-chat"
+  api_key: "your-api-key-here"
+  base_url: "https://api.deepseek.com/v1"
+
+# Embedding Models
+embeddings:
+  # Audio embedding model (CLAP - Contrastive Language-Audio Pretraining)
+  audio:
+    model: "laion/clap-htsat-unfused"
+    dimension: 512
+  # Text embedding model
+  text:
+    model: "BAAI/bge-large-en-v1.5"
+    base_url: "http://localhost:8000/v1"
+    dimension: 1024
+  # Visual embedding model (CLIP)
+  visual:
+    model: "openai/clip-vit-large-patch14"
+    dimension: 768
+
+# Audio Processing Configuration
+audio:
+  sample_rate: 16000
+  chunk_duration_sec: 10  # Duration of each audio chunk in seconds
+  overlap_sec: 2  # Overlap between chunks
+  supported_formats: [".wav", ".mp3", ".flac", ".ogg", ".m4a"]
+  
+# Milvus Vector Database Configuration
+milvus:
+  uri: "milvus_multimodal.db"  # Local Milvus Lite
+  collections:
+    audio_chunks:
+      name: "audio_chunks_collection"
+      dimension: 512
+      index_type: "IVF_FLAT"
+      metric_type: "IP"
+      nlist: 128
+    text_chunks:
+      name: "text_chunks_collection"
+      dimension: 1024
+      index_type: "IVF_FLAT"
+      metric_type: "IP"
+      nlist: 128
+
+# Knowledge Graph Configuration
+knowledge_graph:
+  # MySQL for storing graph structure
+  mysql:
+    host: "localhost"
+    port: 3306
+    user: "root"
+    password: "your-password"
+    database: "multimodal_kg"
+  # Or use SQLite for simpler setup
+  sqlite:
+    path: "knowledge_graph.db"
+  use_sqlite: true  # Set to false to use MySQL
+
+# Processing Configuration
+processing:
+  batch_size: 32
+  max_workers: 4
+  topk_retrieval: 10
+  similarity_threshold: 0.7
+
+# Clustering Configuration (for hierarchical aggregation)
+clustering:
+  min_cluster_size: 3
+  max_cluster_size: 50
+  umap_n_neighbors: 15
+  umap_min_dist: 0.1
+  umap_n_components: 10
+
+# Logging
+logging:
+  level: "INFO"
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
